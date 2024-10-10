@@ -1,8 +1,22 @@
 import { useEffect, useState } from "react";
 
 import Post from "../../components/post";
+import { getImages, postImage } from "../../services/post";
 
 function Home() {
+
+    const [posts, setPosts] = useState([]);
+
+    async function getImagesFromBe(params) {
+        const response = await getImages(1, 100);
+        if(response.status === 200){
+            setPosts(response.data.content);
+        }
+    } 
+
+    useEffect(() => {
+        getImagesFromBe();
+    }, []);
 
     return (
         <div className="container-fluid row h-100 min-vh-100">
@@ -13,6 +27,9 @@ function Home() {
                 </div>
                 <div className="d-flex justify-content-center align-items-center">
                     <h5 className="text-center"><strong>Le Cong Dung</strong></h5>
+                </div>
+                <div className="d-flex justify-content-center align-items-center mt-5">
+                    <button type="button" className="btn btn-outline-secondary">Log out</button>
                 </div>
             </div>
 
@@ -26,10 +43,16 @@ function Home() {
                         <div className="input-group mb-3">
                             <input type="file" className="form-control rounded-pill" id="inputGroupFile02" />
                         </div>
+                        <div className="d-flex justify-content-center align-items-center mb-3">
+                            <button type="button" className="btn btn-outline-primary">Post</button>
+                        </div>
                     </div>
+
                 </div>
                 <div id="content" className=" m-5" >
-                    <Post/>
+                    {
+                        posts.map((post, i ) => (<Post post={post} key={i}/>))
+                    }
                 </div>
             </div>
         </div>

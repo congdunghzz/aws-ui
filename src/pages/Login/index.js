@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { login } from "../../services/authentication";
 
 // import * as authenticationService from "../../services/authenticationService";
 import "./Login.css"
@@ -22,8 +23,14 @@ function Login() {
         }
         console.log(loginRequest);
         
-        // const res = await authenticationService.login(loginRequest)
-
+        const res = await login(loginRequest)
+        if (res.status == 200){
+            localStorage.setItem("authToken", res.data.token);
+            localStorage.setItem("userId", res.data.userId);
+            navigate("/home");
+        }else{
+            alert("Login failed");
+        }
     }
 
 
