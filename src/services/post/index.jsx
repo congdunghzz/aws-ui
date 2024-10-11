@@ -6,15 +6,10 @@ import baseUrl from "../baseUrl";
 
 export async function postImage(payload) {
     try {
-        const response = await axios.post(`${baseUrl}/image`,
-            {
-                title: payload.title,
-                file: payload.file
-            },
+        const response = await axios.post(`${baseUrl}/image`, payload,
             {
                 headers:
                 {
-                    'Content-Type': 'application/json',
                     ...authHeader()
                 }
             }

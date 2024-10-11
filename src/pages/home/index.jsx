@@ -6,13 +6,38 @@ import { getImages, postImage } from "../../services/post";
 function Home() {
 
     const [posts, setPosts] = useState([]);
+    const [postTitle, setPostTitle] = useState("");
+    const [file, setFile] = useState();
 
-    async function getImagesFromBe(params) {
+    async function getImagesFromBe() {
         const response = await getImages(1, 100);
         if(response.status === 200){
             setPosts(response.data.content);
         }
     } 
+
+    const handleTitleChange = (e) => {
+        setPostTitle(e.target.value);
+    };
+
+    const handleFileChange = (e) => {        
+        setFile(e.target.files[0]);
+    };
+
+    async function uploadPost(){
+        const data = new FormData();
+        data.append('title', postTitle);
+        data.append('file', file);
+        console.log(data.get('file'));
+        
+        const response = await postImage(data);
+        if (response.status === 200){
+            setPosts((prevPosts) => [response.data, ...prevPosts]);
+        }else{
+            alert(response.data.error)
+        }
+        
+    }
 
     useEffect(() => {
         getImagesFromBe();
@@ -38,13 +63,18 @@ function Home() {
                     <div className="w-50">
                         <div className="input-group mb-3">
                             <input type="text" className="form-control rounded-pill"
-                                placeholder="Share your moment" aria-label="Username" aria-describedby="basic-addon1" />
+                                placeholder="Share your moment" aria-label="Username" aria-describedby="basic-addon1" 
+                                onChange={(e) => handleTitleChange(e)}/>
                         </div>
                         <div className="input-group mb-3">
-                            <input type="file" className="form-control rounded-pill" id="inputGroupFile02" />
+                            <input type="file" className="form-control rounded-pill" id="inputGroupFile02" 
+                                onChange={(e) => handleFileChange(e)}/>
                         </div>
                         <div className="d-flex justify-content-center align-items-center mb-3">
-                            <button type="button" className="btn btn-outline-primary">Post</button>
+                            <button type="button" className="btn btn-outline-primary"
+                                onClick={() => {uploadPost()}}>
+                                Post
+                            </button>
                         </div>
                     </div>
 
