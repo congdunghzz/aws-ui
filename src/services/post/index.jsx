@@ -37,5 +37,35 @@ export async function getImages(page, size) {
         console.log(error);
         return error.response.data;
     }
+}
 
+export async function deleteImages(postId) {
+
+    try {
+        const response = await axios.delete(`${baseUrl}/image/${postId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...authHeader()
+            }
+        })
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        return error.response.data;
+    }
+}
+export async function download(postId) {
+
+    try {
+        const response = await axios.get(`${baseUrl}/image/download/${postId}`, {
+            headers: {
+                ...authHeader()
+            },
+            responseType: 'blob'
+        })
+        return response;
+    } catch (error) {
+        console.log(error);
+        return error.response;
+    }
 }

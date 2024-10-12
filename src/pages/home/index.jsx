@@ -8,6 +8,8 @@ function Home() {
     const [posts, setPosts] = useState([]);
     const [postTitle, setPostTitle] = useState("");
     const [file, setFile] = useState();
+    const [name, setName] = useState("");
+    const [userId, setUserId] = useState("");
 
     async function getImagesFromBe() {
         const response = await getImages(1, 100);
@@ -27,9 +29,7 @@ function Home() {
     async function uploadPost(){
         const data = new FormData();
         data.append('title', postTitle);
-        data.append('file', file);
-        console.log(data.get('file'));
-        
+        data.append('file', file);        
         const response = await postImage(data);
         if (response.status === 200){
             setPosts((prevPosts) => [response.data, ...prevPosts]);
@@ -43,6 +43,14 @@ function Home() {
         getImagesFromBe();
     }, []);
 
+    useEffect(() => {
+
+        const token = localStorage.getItem('authToken');
+        const claim = JSON.parse(atob(token.split('.')[1]));
+        setName(claim.name);
+        setUserId(localStorage.getItem('userId'));
+    }, []); 
+
     return (
         <div className="container-fluid row h-100 min-vh-100">
             <div className="col-2 pt-5 mh-100 shadow bg-body-tertiary rounded border border-start-0 max-vh-100">
@@ -51,7 +59,7 @@ function Home() {
                         className="rounded-circle mb-3 border border-0" alt="Avatar" />
                 </div>
                 <div className="d-flex justify-content-center align-items-center">
-                    <h5 className="text-center"><strong>Le Cong Dung</strong></h5>
+                    <h5 className="text-center"><strong>{name}</strong></h5>
                 </div>
                 <div className="d-flex justify-content-center align-items-center mt-5">
                     <button type="button" className="btn btn-outline-secondary">Log out</button>
@@ -81,7 +89,7 @@ function Home() {
                 </div>
                 <div id="content" className=" m-5" >
                     {
-                        posts.map((post, i ) => (<Post post={post} key={i}/>))
+                        posts.map((post, i ) => (<Post post={post} canDelete={userId === post.ownedBy} key={i}/>))
                     }
                 </div>
             </div>
