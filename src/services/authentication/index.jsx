@@ -4,8 +4,6 @@ import baseUrl from "../baseUrl";
 
 
 export async function login(loginRequest) {
-
-    console.log(baseUrl);
     
     try{
         const response = await axios.post(`${baseUrl}/auth/login`, {
@@ -26,7 +24,6 @@ export async function login(loginRequest) {
 }
 export async function register(registerRequest) {
 
-    console.log(baseUrl);
     
     try{
         const response = await axios.post(`${baseUrl}/auth/register`, {

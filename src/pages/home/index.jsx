@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Post from "../../components/post";
 import { getImages, postImage } from "../../services/post";
@@ -11,10 +12,14 @@ function Home() {
     const [name, setName] = useState("");
     const [userId, setUserId] = useState("");
 
+    const navigate = useNavigate();
     async function getImagesFromBe() {
         const response = await getImages(1, 100);
         if(response.status === 200){
             setPosts(response.data.content);
+        }else{
+            console.log(response.status);
+            navigate("/login");
         }
     } 
 
@@ -24,6 +29,14 @@ function Home() {
 
     const handleFileChange = (e) => {        
         setFile(e.target.files[0]);
+    };
+
+    const logout = () => {
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("userId");
+        setUserId('');
+        setName('');
+        navigate("/login");
     };
 
     async function uploadPost(){
@@ -40,14 +53,31 @@ function Home() {
     }
 
     useEffect(() => {
+        const token = localStorage.getItem('authToken');        
+        if(token !== null){
+            const claim = JSON.parse(atob(token.split('.')[1]));
+            const expired = new Date(claim.exp * 1000);
+
+            if(expired < new Date().getTime()){
+                navigate("/login");
+            }
+        }else {
+            navigate("/login");
+        }
+
+    }, []);
+
+    useEffect(() => {
         getImagesFromBe();
     }, []);
 
     useEffect(() => {
 
         const token = localStorage.getItem('authToken');
-        const claim = JSON.parse(atob(token.split('.')[1]));
-        setName(claim.name);
+        if(token !== null){
+            const claim = JSON.parse(atob(token.split('.')[1]));
+            setName(claim.name);
+        }
         setUserId(localStorage.getItem('userId'));
     }, []); 
 
@@ -62,7 +92,7 @@ function Home() {
                     <h5 className="text-center"><strong>{name}</strong></h5>
                 </div>
                 <div className="d-flex justify-content-center align-items-center mt-5">
-                    <button type="button" className="btn btn-outline-secondary">Log out</button>
+                    <button type="button" className="btn btn-outline-secondary" onClick={() => {logout()}}>Log out</button>
                 </div>
             </div>
 
