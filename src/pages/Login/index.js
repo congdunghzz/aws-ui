@@ -21,7 +21,6 @@ function Login() {
             username: username,
             password: password
         }
-        console.log(loginRequest);
         
         const res = await login(loginRequest)
         if (res.status == 200){

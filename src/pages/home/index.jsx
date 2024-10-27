@@ -16,7 +16,7 @@ function Home() {
     async function getImagesFromBe() {
         const response = await getImages(1, 100);
         if(response.status === 200){
-            setPosts(response.data.content);
+            setPosts(response.data);
         }else{
             console.log(response.status);
             navigate("/login");
